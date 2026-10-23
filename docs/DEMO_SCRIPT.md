@@ -9,7 +9,7 @@ Everything below matches what is in the app today: live Strike WebSocket, signal
 - Recorder: QuickTime (File > New Screen Recording) or OBS or Loom. Record voice separately in a quiet room if you can, then lay it over; or read live and keep the script open on a second screen.
 - Do a full dry run once. Pick the trade BEFORE recording (see below).
 - Click "reset" on the Paper portfolio card so the portfolio starts clean at $10,000.
-- Have `ANTHROPIC_API_KEY` set so the rationale label reads "written by Claude from live data". If it says "auto summary", the key is missing: either fix it or say "template fallback" in the voiceover. Do not claim Claude wrote it.
+- Have `GEMINI_API_KEY` (free) or `ANTHROPIC_API_KEY` set so the rationale label reads "written by Gemini/Claude from live data". If it says "auto summary", the key is missing: either fix it or say "template fallback" in the voiceover. Do not claim Claude wrote it.
 
 ### Getting a trade that looks good live
 - Funding accrues hourly, so a few seconds of recording shows a tiny number. Two options:

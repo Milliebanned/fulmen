@@ -26,7 +26,7 @@ Fulmen reads Strike's public, unauthenticated API at https://api.strikefinance.o
 
 The paper broker applies Strike's funding convention (hourly, positive rate means longs pay shorts). Order tickets link out to https://app.strikefinance.org. Live order routing through Strike's trade API with a builder code (X-Builder-Fee-Bps) is the next step and is not yet part of the working prototype.
 
-**Tech stack:** Next.js 16 (App Router), React 19, TypeScript, Tailwind 4. Anthropic Claude API (server-side route `/api/explain`) for rationales, with a deterministic fallback. No database; paper state in browser localStorage. Deployed on [FILL: Vercel URL].
+**Tech stack:** Next.js 16 (App Router), React 19, TypeScript, Tailwind 4. Gemini (free tier) or Anthropic Claude API (server-side route `/api/explain`) for rationales, with a deterministic fallback. No database; paper state in browser localStorage. Deployed on [FILL: Vercel URL].
 
 **What is original:** The conviction model (funding-carry-first scoring combined with smart-money attention, liquidity filtering and a volatility penalty), the risk-guard sizing that derives position size from a fixed stop-out loss, the paper broker with Strike-accurate hourly funding accrual, the grounded Claude explanation layer, and the whole UI were written during the hackathon (Oct 21 to 23, 2026). Strike's public API and Anthropic's API are the only external services. [FILL: confirm no code was reused from earlier projects.]
 
