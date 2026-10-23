@@ -115,8 +115,9 @@ async function viaGemini(key: string, prompt: string, notes: string[]): Promise<
       return null;
     }
     notes.push(`gemini ${model} HTTP ${res.status}`);
-    if (res.status !== 404) return null; // auth/quota/etc: other models will not help
-    if (!queue.length && !discovered) {
+    // 404 = unknown model name, 429/503 = this model is busy: try the next one. Auth errors will not improve.
+    if (![404, 429, 500, 503].includes(res.status)) return null;
+    if (!queue.length && !discovered && res.status === 404) {
       discovered = true;
       queue = (await discoverGeminiModels(key)).slice(0, 4);
       if (!queue.length) notes.push("gemini model discovery returned nothing");

@@ -1,4 +1,4 @@
-# ⚡ Fulmen — signal → trade terminal for Strike
+# Fulmen — signal → trade terminal for Strike
 
 > *Fulmen* (Latin): a lightning strike.
 

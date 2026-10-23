@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchMarkets, fetchSummary } from "@/lib/strike";
-import { fmt, price } from "@/lib/signals";
+import { price } from "@/lib/signals";
 
 interface Live {
   btc: number | null;
@@ -64,14 +64,6 @@ export function LiveCards() {
               {d.fund.apr >= 0 ? "+" : ""}
               {d.fund.apr.toFixed(0)}% APR
             </span>
-          </div>
-        </div>
-      )}
-      {d.traders && (
-        <div className={`${chip} float absolute -bottom-6 left-16 hidden w-72 lg:block`} style={{ animationDelay: "2.1s" }}>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Strike so far</div>
-          <div className="num mt-1 whitespace-nowrap text-sm font-bold text-ink">
-            {d.traders.toLocaleString()} traders{d.volume ? ` · $${fmt(d.volume)} volume` : ""}
           </div>
         </div>
       )}

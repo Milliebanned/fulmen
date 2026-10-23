@@ -7,6 +7,7 @@ import { LIVE_ENABLED, STRIKE_ENV } from "@/lib/execution/config";
 import { STRIKE_APP } from "@/lib/strike";
 import { useApp } from "@/lib/store";
 import { cx } from "./ui";
+import { LogoMark } from "./Logo";
 
 export const NAV = [
   { href: "/dashboard", label: "Dashboard" },
@@ -24,7 +25,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="frame p-3 sm:p-5">
         <header className="sticky top-2 z-30 -mx-1 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/60 px-3 py-2 shadow-sm backdrop-blur-md">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-black text-lg text-white">⚡</div>
+            <LogoMark className="h-10 w-10" />
             <div className="leading-tight">
               <div className="text-lg font-bold tracking-tight">Fulmen</div>
               <p className="text-[11px] text-muted">Signal to trade for Strike</p>
@@ -65,7 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main>{children}</main>
 
         <footer className="mt-6 text-center text-[11px] leading-relaxed text-muted">
-          Built for the Strike Hackathon on Strike&apos;s API. The portfolio is paper trading; live orders exist only when a builder code is configured.
+          Live data from Strike&apos;s API. The portfolio is paper trading; live orders exist only when a builder code is configured.
           Signals are heuristics, not financial advice.
         </footer>
       </div>
