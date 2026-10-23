@@ -102,7 +102,7 @@ async function discoverGeminiModels(key: string): Promise<string[]> {
 
 async function viaGemini(key: string, prompt: string, notes: string[]): Promise<string | null> {
   const started = Date.now();
-  const preferred = [geminiModel, process.env.GEMINI_MODEL, "gemini-flash-lite-latest", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash"].filter(Boolean) as string[];
+  const preferred = [geminiModel, process.env.GEMINI_MODEL, "gemini-2.5-flash-lite", "gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-flash-latest"].filter(Boolean) as string[];
   const tried = new Set<string>();
   let queue = [...new Set(preferred)];
   let discovered = false;
