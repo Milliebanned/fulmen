@@ -18,11 +18,11 @@ const INTERVALS = ["15m", "1h", "4h"] as const;
 type Interval = (typeof INTERVALS)[number];
 
 const C = {
-  up: "#2ee6a6",
-  down: "#ff5c7a",
-  bolt: "#ffd23f",
-  grid: "#1f2638",
-  muted: "#8a93a8",
+  up: "#16a34a",
+  down: "#e11d6a",
+  bolt: "#d97706",
+  grid: "#e7ebf4",
+  muted: "#6f7990",
 };
 
 interface Props {
@@ -153,7 +153,7 @@ export function PriceChart({ symbol, side, entry, stop, target, livePrice }: Pro
   const changePct = shown && shown.o > 0 ? (change / shown.o) * 100 : 0;
 
   return (
-    <div className="rounded-xl border border-line bg-panel p-3 sm:p-4">
+    <div className="card p-3 sm:p-4">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <div className="text-[11px] uppercase tracking-[0.14em] text-muted">
           {symbol} chart
@@ -166,7 +166,7 @@ export function PriceChart({ symbol, side, entry, stop, target, livePrice }: Pro
               type="button"
               onClick={() => setIntervalSel(iv)}
               className={`rounded-md border px-2 py-0.5 text-[11px] transition-colors ${
-                iv === interval ? "border-bolt/60 bg-bolt/10 text-bolt" : "border-line text-muted hover:text-white"
+                iv === interval ? "border-bolt/60 bg-bolt/10 text-bolt" : "border-line text-muted hover:text-ink"
               }`}
             >
               {iv}
@@ -179,10 +179,10 @@ export function PriceChart({ symbol, side, entry, stop, target, livePrice }: Pro
         {shown ? (
           <>
             <span>{fmtTime(shown.t, interval, true)}</span>
-            <span>O <b className="font-medium text-white">{fmtPrice(shown.o)}</b></span>
-            <span>H <b className="font-medium text-white">{fmtPrice(shown.h)}</b></span>
-            <span>L <b className="font-medium text-white">{fmtPrice(shown.l)}</b></span>
-            <span>C <b className="font-medium text-white">{fmtPrice(shown.c)}</b></span>
+            <span>O <b className="font-medium text-ink">{fmtPrice(shown.o)}</b></span>
+            <span>H <b className="font-medium text-ink">{fmtPrice(shown.h)}</b></span>
+            <span>L <b className="font-medium text-ink">{fmtPrice(shown.l)}</b></span>
+            <span>C <b className="font-medium text-ink">{fmtPrice(shown.c)}</b></span>
             <span className={change >= 0 ? "text-up" : "text-down"}>
               {change >= 0 ? "+" : ""}
               {changePct.toFixed(2)}%
@@ -300,7 +300,7 @@ export function PriceChart({ symbol, side, entry, stop, target, livePrice }: Pro
                     strokeDasharray={l.label === "ENTRY" ? undefined : "5 4"}
                   />
                   <rect x={padL + plotW + 1} y={y - 7} width={padR - 2} height={14} rx={3} fill={l.color} />
-                  <text x={padL + plotW + 4} y={y + 3} fontSize={9.5} fontWeight={600} fill="#07090f" className="num">
+                  <text x={padL + plotW + 4} y={y + 3} fontSize={9.5} fontWeight={600} fill="#ffffff" className="num">
                     {lvlLabel(l.v)}
                   </text>
                   <text x={padL + 4} y={y - 4} fontSize={9.5} fontWeight={600} fill={l.color}>
@@ -317,12 +317,12 @@ export function PriceChart({ symbol, side, entry, stop, target, livePrice }: Pro
                   x2={padL + plotW}
                   y1={geo.y(last.c)}
                   y2={geo.y(last.c)}
-                  stroke="#e8ecf5"
+                  stroke="#0e1220"
                   strokeOpacity={0.35}
                   strokeDasharray="2 3"
                 />
-                <rect x={padL + plotW + 1} y={geo.y(last.c) - 7} width={padR - 2} height={14} rx={3} fill="#2a3350" />
-                <text x={padL + plotW + 4} y={geo.y(last.c) + 3} fontSize={9.5} fill="#e8ecf5" className="num">
+                <rect x={padL + plotW + 1} y={geo.y(last.c) - 7} width={padR - 2} height={14} rx={3} fill="#0e1220" />
+                <text x={padL + plotW + 4} y={geo.y(last.c) + 3} fontSize={9.5} fill="#ffffff" className="num">
                   {lvlLabel(last.c)}
                 </text>
               </g>

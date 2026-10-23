@@ -64,7 +64,7 @@ export function BacktestPanel({ symbol }: { symbol: string }) {
   const r = !loading ? state.res : undefined;
 
   return (
-    <section className="rounded-xl border border-line bg-panel">
+    <section className="card">
       <header className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
         <h3 className="text-[11px] uppercase tracking-[0.14em] text-muted">Backtest · funding-carry rule</h3>
         <span className="num text-[11px] text-muted">{symbol}</span>

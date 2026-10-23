@@ -257,7 +257,7 @@ function LivePanel({ idea, sizing }: { idea: Idea; sizing: Sizing }) {
             <button
               onClick={() => send(phase.plan)}
               disabled={phase.k === "sending"}
-              className="flex-1 rounded bg-down px-3 py-2 text-sm font-semibold text-black disabled:opacity-50"
+              className="flex-1 rounded bg-down px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
             >
               {phase.k === "sending" ? "Sending..." : `Confirm real ${NET} order`}
             </button>

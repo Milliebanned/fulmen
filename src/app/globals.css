@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
+/* Light fintech theme: sky-blue backdrop, white rounded cards, black pill controls. */
 :root {
-  --bg: #07090f;
-  --panel: #0e121b;
-  --panel-2: #131826;
-  --line: #1f2638;
-  --text: #e8ecf5;
-  --muted: #8a93a8;
-  --bolt: #ffd23f;
-  --up: #2ee6a6;
-  --down: #ff5c7a;
-  --accent: #6c8cff;
+  --bg: #dbe7ff;
+  --panel: #ffffff;
+  --panel-2: #f3f6fc;
+  --line: #e7ebf4;
+  --text: #0e1220;
+  --muted: #6f7990;
+  --bolt: #d97706; /* amber: conviction, entry lines, warnings */
+  --up: #16a34a;
+  --down: #e11d6a;
+  --accent: #2f6df6;
+  --ink-black: #0e1220;
 }
 
 @theme inline {
@@ -24,19 +26,20 @@
   --color-up: var(--up);
   --color-down: var(--down);
   --color-accent: var(--accent);
+  --color-ink-black: var(--ink-black);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   background:
-    radial-gradient(900px 400px at 15% -10%, rgba(255, 210, 63, 0.08), transparent 60%),
-    radial-gradient(800px 400px at 95% 0%, rgba(108, 140, 255, 0.1), transparent 60%),
-    var(--bg);
+    radial-gradient(1100px 520px at 12% -8%, rgba(255, 255, 255, 0.85), transparent 60%),
+    linear-gradient(180deg, #9fbcff 0%, #c4d6ff 38%, #e6eeff 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
@@ -46,11 +49,62 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* White rounded card with a soft lift, used by every panel. */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(20, 30, 70, 0.04), 0 8px 24px rgba(40, 70, 150, 0.08);
+}
+
+/* App frame that holds the whole dashboard, like the monitor in the reference. */
+.frame {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(30, 60, 140, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+/* Glassy blue assistant card. */
+.glass-blue {
+  background: linear-gradient(160deg, #eaf1ff 0%, #bcd2ff 55%, #8fb3ff 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(47, 109, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.orb {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #8fb6ff, #2f6df6 65%, #1d49c4);
+  box-shadow: 0 0 40px 8px rgba(47, 109, 246, 0.45);
+  position: relative;
+}
+.orb::before,
+.orb::after {
+  content: "";
+  position: absolute;
+  top: 24px;
+  width: 9px;
+  height: 14px;
+  border-radius: 6px;
+  background: #fff;
+}
+.orb::before { left: 20px; }
+.orb::after { right: 20px; }
+
+/* Pastel diagonal stripes for the highlighted bar, as in the reference. */
+.stripes {
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0 2px, transparent 2px 6px);
+}
+
 .scroll-thin::-webkit-scrollbar {
   width: 6px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: var(--line);
+  background: #cfd7ea;
   border-radius: 6px;
 }
 
