@@ -24,10 +24,51 @@ function fallback(b: Body): string {
   );
 }
 
+// The route is public, so validate input and rate-limit per IP before spending any API credit.
+const finite = (n: unknown): n is number => typeof n === "number" && Number.isFinite(n);
+
+function parse(raw: unknown): Body | null {
+  const b = raw as Partial<Body> | null;
+  if (!b || typeof b.symbol !== "string" || !/^[A-Z0-9._-]{1,24}$/.test(b.symbol)) return null;
+  if (b.side !== "long" && b.side !== "short") return null;
+  if (![b.conviction, b.entry, b.stop, b.target].every(finite)) return null;
+  if (!Array.isArray(b.reasons) || b.reasons.length > 8) return null;
+  const reasons = b.reasons
+    .filter((r) => r && typeof r.tag === "string" && typeof r.text === "string")
+    .map((r) => ({ tag: r.tag.slice(0, 20), text: r.text.slice(0, 400), tone: String(r.tone ?? "").slice(0, 10) }));
+  return {
+    symbol: b.symbol,
+    side: b.side,
+    conviction: b.conviction as number,
+    entry: b.entry as number,
+    stop: b.stop as number,
+    target: b.target as number,
+    fearGreed: finite(b.fearGreed) ? b.fearGreed : undefined,
+    reasons,
+  };
+}
+
+const hits = new Map<string, number[]>();
+function limited(ip: string, max = 20, windowMs = 60_000): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < windowMs);
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) hits.clear();
+  return recent.length > max;
+}
+
 export async function POST(req: Request) {
-  const b = (await req.json()) as Body;
+  let b: Body | null = null;
+  try {
+    b = parse(await req.json());
+  } catch {}
+  if (!b) return Response.json({ error: "invalid body" }, { status: 400 });
+
   const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) return Response.json({ text: fallback(b), source: "template" });
+  const ip = (req.headers.get("x-forwarded-for") ?? "local").split(",")[0].trim();
+  // Over the limit (or no key): still answer, but with the free deterministic summary.
+  if (!key || limited(ip)) return Response.json({ text: fallback(b), source: "template" });
 
   const facts = b.reasons.map((r) => `- [${r.tag}] ${r.text}`).join("\n");
   const prompt = `You are the analyst inside Fulmen, a trading terminal for Strike Finance perpetuals.

@@ -196,7 +196,7 @@ export default function Home() {
           {/* Signal board */}
           <Card
             title={`Signal board · ${snap.ideas.length} markets`}
-            className="lg:col-span-4"
+            className="self-start lg:sticky lg:top-4 lg:col-span-4"
             right={<span className="text-[10px] text-muted">ranked by conviction</span>}
           >
             <ul className="scroll-thin max-h-[640px] divide-y divide-line overflow-y-auto">
