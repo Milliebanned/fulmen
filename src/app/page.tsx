@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { GUARD, fmt, price, size, type Idea, type Reason } from "@/lib/signals";
 import { STRIKE_APP } from "@/lib/strike";
+import { PriceChart } from "@/components/PriceChart";
+import { BacktestPanel } from "@/components/BacktestPanel";
+import { LiveTradePanel } from "@/components/LiveTradePanel";
 import { useLiveMarks, useSnapshot } from "@/lib/useStrike";
 import * as paper from "@/lib/paper";
 
@@ -298,6 +301,17 @@ export default function Home() {
               </div>
             </Card>
 
+            <PriceChart
+              symbol={idea.market.symbol}
+              side={idea.side}
+              entry={mark(idea.market.symbol, idea.entry)}
+              stop={idea.stop}
+              target={idea.target}
+              livePrice={marks[idea.market.symbol]}
+            />
+
+            <BacktestPanel symbol={idea.market.symbol} />
+
             <Card title="Order ticket · risk guard on" right={<span className="text-[10px] text-muted">max {GUARD.maxLeverage}x · max {GUARD.maxRiskPct * 100}% risk</span>}>
               <div className="grid gap-4 p-4 sm:grid-cols-2">
                 <div>
@@ -361,6 +375,8 @@ export default function Home() {
                 </div>
               </div>
             </Card>
+
+            <LiveTradePanel idea={idea} sizing={sizing} />
           </div>
 
           {/* Right column */}

@@ -17,6 +17,15 @@ Built for the **Strike Hackathon** (Oct 21–23, 2026).
 4. **Live paper portfolio** — fills at Strike's live mark price over its WebSocket, auto stop/target, and accrues
    **hourly funding the way Strike settles it**.
 5. **Smart-money attention** — where Strike's highest copy-score traders concentrate (weighted by score and 7d PnL).
+6. **Candlestick chart** — 15m/1h/4h candles with the idea's entry, stop and target drawn as shaded risk/reward zones, last candle updating live.
+7. **90-day backtest per market** — replays the rule on Strike's own history (hourly funding from
+   `/stat/v1/stats/coin/history/funding` plus klines): side chosen daily from trailing funding, volatility-based stop,
+   2R target, 0.05%/side fees, 1% risk sizing capped at 5x. It reports return, win rate, max drawdown, the
+   price-vs-funding PnL split and buy-and-hold for comparison, with caveats.
+
+> **Backtest honesty:** in our 90-day runs most return came from the stop/target price moves, and funding was a
+> small part (ADA is the exception). The rule is a *risk-managed directional rule that favours the paid side*, not a
+> pure carry trade, and it trailed buy-and-hold in this up-trending window. We show those numbers rather than hide them.
 
 ## How the conviction score works
 
@@ -72,6 +81,9 @@ Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; p
 - `src/lib/strike.ts` — typed Strike API client
 - `src/lib/signals.ts` — markets, smart-money attention, conviction scoring, position sizing + risk guard
 - `src/lib/paper.ts` — paper broker (fills, stops/targets, hourly funding accrual)
+- `src/lib/backtest.ts`, `src/components/BacktestPanel.tsx` — 90-day backtest
+- `src/components/PriceChart.tsx`, `src/lib/chartMath.ts` — SVG candlestick chart
+- `tests/` — unit tests (`npm test`)
 - `src/lib/useStrike.ts` — data polling + live WebSocket hook
 - `src/app/api/explain/route.ts` — Claude rationale (server-side, key never reaches the browser)
 - `src/app/page.tsx` — the terminal UI
