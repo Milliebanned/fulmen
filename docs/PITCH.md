@@ -6,7 +6,7 @@ Strike lists many perp markets. A trader opening the app sees prices and funding
 ## Product
 Fulmen is a signal-to-trade terminal built only on Strike's public API and mark-price WebSocket.
 - **Ranks** every liquid market with a transparent 0 to 100 conviction score: funding carry 40%, liquidity 22%, momentum 20%, smart-money attention 18%, minus a volatility penalty.
-- **Explains** each idea: direction (take the side that gets paid funding), entry, stop, 2R target, reasons, and a Claude-written rationale that cites only live numbers.
+- **Explains** each idea: direction (take the side that gets paid funding), entry, stop, 2R target, reasons, and a AI-written rationale that cites only live numbers.
 - **Sizes** the trade from a fixed loss at the stop, with a hard guard of 5x leverage and 2% risk per trade.
 - **Tracks** outcomes in a paper portfolio using live marks and Strike's hourly funding convention.
 

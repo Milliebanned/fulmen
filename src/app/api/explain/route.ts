@@ -1,5 +1,6 @@
 // Turns a Fulmen signal into a plain-English trade rationale.
-// Uses Claude when ANTHROPIC_API_KEY is set; otherwise returns a deterministic summary so the app never breaks.
+// Provider order: Gemini (free tier, GEMINI_API_KEY) -> Claude (ANTHROPIC_API_KEY) -> deterministic template,
+// so the app never breaks without a key.
 
 interface Body {
   symbol: string;
@@ -66,6 +67,37 @@ function globalLimited(max = 120, windowMs = 60_000): boolean {
   return globalHits.length > max;
 }
 
+async function viaGemini(key: string, prompt: string): Promise<string | null> {
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": key },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 300, temperature: 0.3 },
+    }),
+  });
+  if (!res.ok) return null;
+  const j = await res.json();
+  const text = j?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
+  return text || null;
+}
+
+async function viaClaude(key: string, prompt: string): Promise<string | null> {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
+    body: JSON.stringify({
+      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
+      max_tokens: 300,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+  if (!res.ok) return null;
+  const j = await res.json();
+  return j?.content?.find((c: { type: string }) => c.type === "text")?.text ?? null;
+}
+
 export async function POST(req: Request) {
   let b: Body | null = null;
   try {
@@ -73,11 +105,12 @@ export async function POST(req: Request) {
   } catch {}
   if (!b) return Response.json({ error: "invalid body" }, { status: 400 });
 
-  const key = process.env.ANTHROPIC_API_KEY;
-  // Prefer platform-set headers (not client-controlled); add a global cap so rotating IPs cannot drain the key.
+  const gemini = process.env.GEMINI_API_KEY;
+  const claude = process.env.ANTHROPIC_API_KEY;
+  // Prefer platform-set headers (not client-controlled); add a global cap so rotating IPs cannot drain a key.
   const ip = (req.headers.get("x-vercel-forwarded-for") ?? req.headers.get("x-real-ip") ?? "local").split(",")[0].trim();
   // Over the limit (or no key): still answer, but with the free deterministic summary.
-  if (!key || limited(ip) || globalLimited()) return Response.json({ text: fallback(b), source: "template" });
+  if ((!gemini && !claude) || limited(ip) || globalLimited()) return Response.json({ text: fallback(b), source: "template" });
 
   const facts = b.reasons.map((r) => `- [${r.tag}] ${r.text}`).join("\n");
   const prompt = `You are the analyst inside Fulmen, a trading terminal for Strike Finance perpetuals.
@@ -90,21 +123,14 @@ Market sentiment index: ${b.fearGreed ?? "n/a"}
 Signals:
 ${facts}`;
 
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({
-        model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
-        max_tokens: 300,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-    if (!res.ok) return Response.json({ text: fallback(b), source: "template" });
-    const j = await res.json();
-    const text = j?.content?.find((c: { type: string }) => c.type === "text")?.text;
-    return Response.json({ text: text || fallback(b), source: text ? "claude" : "template" });
-  } catch {
-    return Response.json({ text: fallback(b), source: "template" });
+  const attempts: [string, () => Promise<string | null>][] = [];
+  if (gemini) attempts.push(["gemini", () => viaGemini(gemini, prompt)]);
+  if (claude) attempts.push(["claude", () => viaClaude(claude, prompt)]);
+  for (const [source, run] of attempts) {
+    try {
+      const text = await run();
+      if (text) return Response.json({ text, source });
+    } catch {}
   }
+  return Response.json({ text: fallback(b), source: "template" });
 }

@@ -12,7 +12,7 @@ Built for the **Strike Hackathon** (Oct 21–23, 2026).
 
 1. **Signal board** — ranks every liquid Strike perp by a transparent *conviction score* (0–100).
 2. **Explained trade idea** — direction, entry, stop, 2R target, and the reasons behind it (funding, momentum,
-   smart-money attention, liquidity, risk flags). A Claude-written rationale cites only the live numbers.
+   smart-money attention, liquidity, risk flags). An AI-written rationale (Gemini or Claude) cites only the live numbers.
 3. **Risk-guarded order ticket** — position size is derived from your risk-per-trade; the guard hard-caps leverage (5x) and risk (2%).
 4. **Live paper portfolio** — fills at Strike's live mark price over its WebSocket, auto stop/target, and accrues
    **hourly funding the way Strike settles it**.
@@ -74,8 +74,8 @@ npm run dev        # http://localhost:3000
 
 Optional live execution: set `NEXT_PUBLIC_STRIKE_BUILDER_CODE` (and `NEXT_PUBLIC_STRIKE_ENV=testnet`). See `.env.example`.
 
-Optional: set `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`) in `.env.local` to get Claude-written rationales.
-Without a key Fulmen falls back to a deterministic summary of the same facts — nothing breaks.
+Optional AI rationales: set `GEMINI_API_KEY` (free tier, https://aistudio.google.com/apikey) and/or `ANTHROPIC_API_KEY` in
+`.env.local`. Order is Gemini, then Claude, then a deterministic summary of the same facts, so nothing breaks without a key.
 
 Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; paper state lives in `localStorage`.
 
@@ -89,7 +89,7 @@ Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; p
 - `src/lib/execution/*`, `src/components/LiveTradePanel.tsx` — builder-code connect, signing, bracket orders (opt-in, testnet-first)
 - `tests/` — unit tests (`npm test`)
 - `src/lib/useStrike.ts` — data polling + live WebSocket hook
-- `src/app/api/explain/route.ts` — Claude rationale (server-side, key never reaches the browser)
+- `src/app/api/explain/route.ts` — AI rationale via Gemini/Claude with template fallback (server-side, keys never reach the browser)
 - `src/app/page.tsx` — the terminal UI
 
 ## Roadmap (future potential)

@@ -308,7 +308,7 @@ export default function Home() {
                 <div className="mt-4 rounded-lg border border-line bg-panel2 p-3">
                   <div className="mb-1 flex items-center justify-between text-[10px] uppercase tracking-widest text-muted">
                     <span>Analyst rationale</span>
-                    <span>{aiLoading ? "thinking…" : ai?.source === "claude" ? "written by Claude from live data" : "auto summary"}</span>
+                    <span>{aiLoading ? "thinking…" : ai?.source === "gemini" ? "written by Gemini from live data" : ai?.source === "claude" ? "written by Claude from live data" : "auto summary"}</span>
                   </div>
                   <p className="text-sm leading-relaxed">
                     {ai && ai.symbol === idea.market.symbol ? ai.text : aiLoading ? "Generating rationale from the live numbers…" : "—"}
