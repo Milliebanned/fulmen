@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GUARD, fmt, price, size, type Idea, type Reason } from "@/lib/signals";
 import { STRIKE_APP } from "@/lib/strike";
 import { PriceChart } from "@/components/PriceChart";
@@ -90,7 +90,7 @@ function Card({
   tint?: string;
 }) {
   return (
-    <section id={id} className={cx("card scroll-mt-4", className)}>
+    <section id={id} className={cx("card scroll-mt-24", className)}>
       <header className="flex items-center justify-between px-4 pb-1 pt-3.5">
         <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
           <span className="h-4 w-4 rounded-md" style={{ background: `color-mix(in srgb, ${tint} 18%, white)`, boxShadow: `inset 0 0 0 4px color-mix(in srgb, ${tint} 55%, white)` }} />
@@ -130,6 +130,13 @@ function Donut({ items }: { items: { label: string; value: number; color: string
   );
 }
 
+const TABS = [
+  { id: "top", label: "Dashboard" },
+  { id: "signals", label: "Signals" },
+  { id: "backtest", label: "Backtest" },
+  { id: "portfolio", label: "Portfolio" },
+] as const;
+
 const DONUT_COLORS = ["#2f6df6", "#e11d6a", "#16a34a", "#f59e0b", "#6d5ef6"];
 
 export default function Home() {
@@ -142,6 +149,39 @@ export default function Home() {
   const [ai, setAi] = useState<{ symbol: string; text: string; source: string } | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("top");
+
+  // Smooth in-page navigation: no URL changes, no reload; the active tab follows the scroll position.
+  const lockUntil = useRef(0);
+  const goTo = (id: string) => {
+    setActiveTab(id);
+    // eslint-disable-next-line react-hooks/purity -- runs in a click handler, not during render
+    lockUntil.current = Date.now() + 900; // keep the clicked tab highlighted while the smooth scroll runs
+    if (id === "top") window.scrollTo({ top: 0, behavior: "smooth" });
+    else document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  useEffect(() => {
+    const onScroll = () => {
+      if (Date.now() < lockUntil.current) return;
+      if (window.scrollY < 120) return setActiveTab("top");
+      // The section whose top edge is closest above the reading line wins (columns differ in height).
+      const line = window.innerHeight * 0.4;
+      let best = "top";
+      let bestTop = -Infinity;
+      for (const t of TABS) {
+        const el = t.id === "top" ? null : document.getElementById(t.id);
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top;
+        if (top <= line && top > bestTop) {
+          best = t.id;
+          bestTop = top;
+        }
+      }
+      setActiveTab(best);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -244,7 +284,7 @@ export default function Home() {
     <div className="mx-auto w-full max-w-[1500px] flex-1 px-3 pb-10 pt-4 sm:px-6">
       <div className="frame p-3 sm:p-5">
         {/* Top bar */}
-        <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <header className="sticky top-2 z-30 -mx-1 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/60 px-3 py-2 shadow-sm backdrop-blur-md">
           <div className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-black text-lg text-white">⚡</div>
             <div className="leading-tight">
@@ -253,19 +293,16 @@ export default function Home() {
             </div>
           </div>
           <nav className="order-last flex w-full justify-center gap-1.5 rounded-full bg-white/70 p-1 text-xs font-semibold shadow-sm sm:order-none sm:w-auto" aria-label="Sections">
-            {[
-              ["Dashboard", "#top", true],
-              ["Signals", "#signals", false],
-              ["Backtest", "#backtest", false],
-              ["Portfolio", "#portfolio", false],
-            ].map(([label, href, active]) => (
-              <a
-                key={label as string}
-                href={href as string}
-                className={cx("rounded-full px-3.5 py-1.5 transition", active ? "bg-ink-black text-white" : "text-ink/70 hover:bg-white")}
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => goTo(t.id)}
+                aria-current={activeTab === t.id ? "page" : undefined}
+                className={cx("rounded-full px-3.5 py-1.5 transition", activeTab === t.id ? "bg-ink-black text-white" : "text-ink/70 hover:bg-white")}
               >
-                {label as string}
-              </a>
+                {t.label}
+              </button>
             ))}
           </nav>
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -281,7 +318,6 @@ export default function Home() {
             </a>
           </div>
         </header>
-        <span id="top" />
 
         {error && !snap && (
           <div className="card p-4 text-sm text-down">Could not reach Strike: {error}</div>
@@ -353,7 +389,7 @@ export default function Home() {
               <Card
                 id="signals"
                 title={`Signal board · ${snap.ideas.length}`}
-                className="self-start lg:sticky lg:top-4 lg:col-span-3"
+                className="self-start lg:sticky lg:top-24 lg:col-span-3"
                 right={<span className="text-[10px] text-muted">by conviction</span>}
               >
                 <ul className="scroll-thin max-h-[640px] divide-y divide-line overflow-y-auto pb-2">
@@ -451,7 +487,7 @@ export default function Home() {
                   livePrice={marks[idea.market.symbol]}
                 />
 
-                <div id="backtest" className="scroll-mt-4">
+                <div id="backtest" className="scroll-mt-24">
                   <BacktestPanel symbol={idea.market.symbol} />
                 </div>
 
