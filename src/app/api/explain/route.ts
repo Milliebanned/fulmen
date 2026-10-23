@@ -67,9 +67,10 @@ function globalLimited(max = 120, windowMs = 60_000): boolean {
   return globalHits.length > max;
 }
 
-async function viaGemini(key: string, prompt: string, notes: string[]): Promise<string | null> {
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+let geminiModel: string | null = null; // cached once a model answers
+
+async function geminiCall(key: string, model: string, prompt: string): Promise<Response> {
+  return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-goog-api-key": key },
     body: JSON.stringify({
@@ -77,14 +78,51 @@ async function viaGemini(key: string, prompt: string, notes: string[]): Promise<
       generationConfig: { maxOutputTokens: 300, temperature: 0.3 },
     }),
   });
-  if (!res.ok) {
-    notes.push(`gemini HTTP ${res.status}`);
-    return null;
-  }
+}
+
+/** Model ids change over time, so if a name 404s ask Google which Flash models this key can use. */
+async function discoverGeminiModels(key: string): Promise<string[]> {
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=100", {
+    headers: { "x-goog-api-key": key },
+  });
+  if (!res.ok) return [];
   const j = await res.json();
-  const text = j?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
-  if (!text) notes.push(`gemini empty (${j?.candidates?.[0]?.finishReason ?? j?.promptFeedback?.blockReason ?? "no candidates"})`);
-  return text || null;
+  return (j?.models ?? [])
+    .filter((m: { name?: string; supportedGenerationMethods?: string[] }) => m.name?.includes("flash") && m.supportedGenerationMethods?.includes("generateContent"))
+    .map((m: { name: string }) => m.name.replace(/^models\//, ""))
+    .filter((n: string) => !/(image|tts|live|audio|embedding|thinking|exp)/.test(n));
+}
+
+async function viaGemini(key: string, prompt: string, notes: string[]): Promise<string | null> {
+  const preferred = [geminiModel, process.env.GEMINI_MODEL, "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"].filter(Boolean) as string[];
+  const tried = new Set<string>();
+  let queue = [...new Set(preferred)];
+  let discovered = false;
+
+  while (queue.length) {
+    const model = queue.shift()!;
+    if (tried.has(model)) continue;
+    tried.add(model);
+    const res = await geminiCall(key, model, prompt);
+    if (res.ok) {
+      const j = await res.json();
+      const text = j?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
+      if (text) {
+        geminiModel = model;
+        return text;
+      }
+      notes.push(`gemini ${model} empty (${j?.candidates?.[0]?.finishReason ?? j?.promptFeedback?.blockReason ?? "no candidates"})`);
+      return null;
+    }
+    notes.push(`gemini ${model} HTTP ${res.status}`);
+    if (res.status !== 404) return null; // auth/quota/etc: other models will not help
+    if (!queue.length && !discovered) {
+      discovered = true;
+      queue = (await discoverGeminiModels(key)).slice(0, 4);
+      if (!queue.length) notes.push("gemini model discovery returned nothing");
+    }
+  }
+  return null;
 }
 
 async function viaClaude(key: string, prompt: string, notes: string[]): Promise<string | null> {
