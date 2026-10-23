@@ -31,8 +31,8 @@ The paper broker applies Strike's funding convention (hourly, positive rate mean
 **What is original:** The conviction model (funding-carry-first scoring combined with smart-money attention, liquidity filtering and a volatility penalty), the risk-guard sizing that derives position size from a fixed stop-out loss, the paper broker with Strike-accurate hourly funding accrual, the grounded Claude explanation layer, and the whole UI were written during the hackathon (Oct 21 to 23, 2026). Strike's public API and Anthropic's API are the only external services. [FILL: confirm no code was reused from earlier projects.]
 
 **Team:** [FILL: names, roles, handles]
-**GitHub:** [FILL: repo URL]
-**Live demo:** [FILL: URL]
+**GitHub:** https://github.com/Milliebanned/fulmen
+**Live demo:** https://flumen.milliebanned.xyz
 **Demo video:** [FILL: URL]
 **Contact:** [FILL: email / Discord / X handle]
 
@@ -46,7 +46,7 @@ The paper broker applies Strike's funding convention (hourly, positive rate mean
 | 2 | Working prototype / MVP | Next.js app: signal board, idea view, order ticket, paper portfolio, smart-money card | Done locally; needs user: confirm the deployed URL works |
 | 3 | Documentation | `README.md` (what it does, scoring table, endpoints, run steps, scope notes); this file; `docs/PITCH.md` | Done |
 | 4 | Demonstration | `docs/DEMO_SCRIPT.md` is the script | Needs user: record, upload, paste link |
-| 5 | GitHub repo | Source is local at /Users/Apple/Strike/fulmen | Needs user: create public repo, push, add [FILL] link. Check no `.env.local` is committed |
+| 5 | GitHub repo | Public repo: https://github.com/Milliebanned/fulmen | Done: repo is public and pushed; `.env*` files are gitignored (only `.env.example` is tracked) |
 
 ### Judging criteria
 

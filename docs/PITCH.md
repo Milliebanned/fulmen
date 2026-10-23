@@ -47,4 +47,4 @@ Signals are heuristics and unbacktested; smart-money data currently shows attent
 - Introductions to active Strike traders for a pilot.
 - If Strike and partners are considering direct investment in hackathon projects: a conversation about funding the next three months of work on execution, backtesting and alerts. [FILL: amount and terms you want, if any.]
 
-Contact: [FILL] | Repo: [FILL] | Live demo: [FILL]
+Contact: [FILL] | Repo: https://github.com/Milliebanned/fulmen | Live demo: https://flumen.milliebanned.xyz

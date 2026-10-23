@@ -6,7 +6,7 @@ Fulmen turns live **Strike Finance** market data into **explained, risk-guarded 
 Most traders face the same question: *what should I trade, and why?* Fulmen answers it from Strike's own data, shows its
 reasoning, sizes the trade so a stop-out costs a fixed % of equity, and tracks the result live.
 
-Built for the **Strike Hackathon** (Oct 21–23, 2026).
+**Live:** https://flumen.milliebanned.xyz · **Code:** https://github.com/Milliebanned/fulmen
 
 ## What it does
 

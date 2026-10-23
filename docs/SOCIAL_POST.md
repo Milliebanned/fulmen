@@ -9,8 +9,8 @@ Built Fulmen for the @StrikeFinance hackathon: live Strike data in, explained an
 Ranks every liquid perp, shows why, caps risk at 2% and 5x, then paper-trades it with real hourly funding.
 
 Live execution via builder code is written; proving it on testnet is next.
-[FILL: demo link]
-[FILL: repo link]
+https://flumen.milliebanned.xyz
+https://github.com/Milliebanned/fulmen
 
 ## Discord version
 
