@@ -51,10 +51,8 @@ export function LiveTradePanel({ idea, sizing }: { idea: Idea; sizing: Sizing })
   if (!LIVE_ENABLED) {
     return (
       <Shell>
-        <p className="text-sm text-muted">Live trading disabled: no builder code configured.</p>
-        <p className="mt-1 text-xs text-muted">
-          Set <code>NEXT_PUBLIC_STRIKE_BUILDER_CODE</code> to enable. Paper trading is unaffected.
-        </p>
+        <p className="text-sm font-medium text-ink">Live execution is not switched on in this version.</p>
+        <p className="mt-1 text-xs text-muted">Open a paper position above to try this idea at live Strike prices, or take it to Strike yourself.</p>
       </Shell>
     );
   }

@@ -66,8 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main>{children}</main>
 
         <footer className="mt-6 text-center text-[11px] leading-relaxed text-muted">
-          Live data from Strike&apos;s API. The portfolio is paper trading; live orders exist only when a builder code is configured.
-          Signals are heuristics, not financial advice.
+          Independent tool built on Strike&apos;s public data. Portfolio trades are simulated at live prices. Not financial advice.
         </footer>
       </div>
 
