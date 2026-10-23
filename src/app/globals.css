@@ -116,3 +116,23 @@ body {
 .live-dot {
   animation: pulse-dot 1.6s ease-in-out infinite;
 }
+
+/* Landing page motion */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.rise {
+  animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise, .float, .live-dot { animation: none; }
+}
+html { scroll-behavior: smooth; }

@@ -1,5 +1,7 @@
 # Fulmen demo video script (target 2:20, hard max 2:30)
 
+NOTE: the app now has a landing page at `/` and four pages (`/dashboard`, `/signals`, `/backtest`, `/portfolio`). Open on the landing page for a few seconds, click Launch app, then follow the shots below; use the Signals page for the idea, chart and ticket, Backtest for the proof, Portfolio for the paper trade.
+
 Everything below matches what is in the app today: live Strike WebSocket, signal board, explained idea, risk-guarded ticket, paper trading with hourly funding, smart-money attention. Live order execution is implemented but NOT proven end-to-end, so do not demo it or imply it works unless you have run a funded testnet order first.
 
 ## Before you hit record

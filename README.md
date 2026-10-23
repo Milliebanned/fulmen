@@ -66,6 +66,16 @@ Data comes from Strike's public, unauthenticated endpoints at `https://api.strik
 Funding detail: Strike settles funding **hourly** (`F_hourly = F_8h / 8`); positive rate means longs pay shorts. Fulmen's paper
 broker accrues that rate continuously (pro-rata per tick), not as discrete hourly payments.
 
+## Routes
+
+| Route | Page |
+|---|---|
+| `/` | Landing page |
+| `/dashboard` | Overview: stat cards, top ideas, smart-money donut, analyst |
+| `/signals` | Trading desk: signal board, explained idea, chart, order ticket, live execution |
+| `/backtest` | Per-market and all-markets backtest |
+| `/portfolio` | Paper account: positions, history, stats, exposure |
+
 ## Run it
 
 ```bash
@@ -91,7 +101,7 @@ Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; p
 - `tests/` — unit tests (`npm test`)
 - `src/lib/useStrike.ts` — data polling + live WebSocket hook
 - `src/app/api/explain/route.ts` — AI rationale via Gemini/Claude with template fallback (server-side, keys never reach the browser)
-- `src/app/page.tsx` (Dashboard), `src/app/signals`, `src/app/backtest`, `src/app/portfolio` — one page per section
+- `src/app/page.tsx` (landing), `src/app/(app)/{dashboard,signals,backtest,portfolio}` — one page per section
 - `src/lib/store.tsx` — shared app state (live data, WebSocket prices, paper account) mounted in the layout
 - `src/components/AppShell.tsx`, `ui.tsx`, `AnalystCard.tsx` — navigation shell and shared UI
 

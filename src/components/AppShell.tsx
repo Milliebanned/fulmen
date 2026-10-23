@@ -9,7 +9,7 @@ import { useApp } from "@/lib/store";
 import { cx } from "./ui";
 
 export const NAV = [
-  { href: "/", label: "Dashboard" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/signals", label: "Signals" },
   { href: "/backtest", label: "Backtest" },
   { href: "/portfolio", label: "Portfolio" },
@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             aria-label="Pages"
           >
             {NAV.map((n) => {
-              const active = n.href === "/" ? pathname === "/" : pathname.startsWith(n.href);
+              const active = pathname.startsWith(n.href);
               return (
                 <Link
                   key={n.href}
