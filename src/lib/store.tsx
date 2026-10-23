@@ -95,7 +95,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!idea) return;
     let cancel = false;
+    // Show the deterministic summary instantly; swap in the AI-written one if it arrives.
+    const risk = idea.reasons.find((r) => r.tag === "Risk");
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAi({
+      symbol: idea.market.symbol,
+      source: "template",
+      text:
+        `${idea.side.toUpperCase()} ${idea.market.symbol} (conviction ${idea.conviction}/100). ${idea.reasons.find((r) => r.tag === "Funding")?.text ?? ""} ` +
+        `Plan: enter near ${price(idea.entry)}, stop ${price(idea.stop)}, target ${price(idea.target)} (2:1 reward to risk). ` +
+        (risk ? `Watch out: ${risk.text}` : "No elevated risk flags right now."),
+    });
     setAiLoading(true);
     fetch("/api/explain", {
       signal: AbortSignal.timeout(20000),
@@ -113,8 +123,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }),
     })
       .then((r) => r.json())
-      .then((j) => !cancel && setAi({ symbol: idea.market.symbol, text: j.text, source: j.source }))
-      .catch(() => !cancel && setAi(null))
+      .then((j) => !cancel && j.source !== "template" && setAi({ symbol: idea.market.symbol, text: j.text, source: j.source }))
+      .catch(() => {})
       .finally(() => !cancel && setAiLoading(false));
     return () => {
       cancel = true;

@@ -164,6 +164,17 @@ async function viaClaude(key: string, prompt: string, notes: string[]): Promise<
   return j?.content?.find((c: { type: string }) => c.type === "text")?.text ?? null;
 }
 
+/** GET /api/explain?models=1 lists the Gemini Flash models this key can call (ids only). */
+export async function GET(req: Request) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key || new URL(req.url).searchParams.get("models") !== "1") return Response.json({ ok: true });
+  try {
+    return Response.json({ models: await discoverGeminiModels(key), cached: geminiModel });
+  } catch {
+    return Response.json({ models: [], error: "discovery failed" });
+  }
+}
+
 export async function POST(req: Request) {
   let b: Body | null = null;
   try {
