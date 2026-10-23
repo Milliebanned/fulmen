@@ -6,6 +6,7 @@ import { STRIKE_APP } from "@/lib/strike";
 import { PriceChart } from "@/components/PriceChart";
 import { BacktestPanel } from "@/components/BacktestPanel";
 import { LiveTradePanel } from "@/components/LiveTradePanel";
+import { LIVE_ENABLED, STRIKE_ENV } from "@/lib/execution/config";
 import { useLiveMarks, useSnapshot } from "@/lib/useStrike";
 import * as paper from "@/lib/paper";
 
@@ -142,13 +143,20 @@ export default function Home() {
   const equity = paper.equity(state, liveMarks);
   const pnl = equity - state.start;
   const sizing = idea ? size(idea, equity, riskPct) : null;
+  // One source of truth: stop/target anchored on the same live mark the chart, ticket and paper fill use.
+  const lv = idea
+    ? (() => {
+        const m = mark(idea.market.symbol, idea.entry);
+        const dir = idea.side === "long" ? 1 : -1;
+        return { m, stop: m * (1 - dir * idea.stopPct), target: m * (1 + dir * idea.stopPct * 2) };
+      })()
+    : null;
 
   function openTrade() {
     if (!idea || !sizing) return;
     const m = mark(idea.market.symbol, idea.entry);
-    const stop = idea.side === "long" ? m * (1 - idea.stopPct) : m * (1 + idea.stopPct);
-    const target = idea.side === "long" ? m * (1 + idea.stopPct * 2) : m * (1 - idea.stopPct * 2);
-    setState((s) => paper.open(s, { symbol: idea.market.symbol, side: idea.side, entry: m, notional: sizing.notional, stop, target }));
+    if (!(m > 0) || !lv) return;
+    setState((s) => paper.open(s, { symbol: idea.market.symbol, side: idea.side, entry: lv.m, notional: sizing.notional, stop: lv.stop, target: lv.target }));
     setToast(`Paper ${idea.side} ${idea.market.symbol} opened at ${price(m)}`);
     setTimeout(() => setToast(null), 3000);
   }
@@ -182,7 +190,9 @@ export default function Home() {
               <b className="num">{snap.summary.total_users.toLocaleString()}</b> traders
             </span>
           )}
-          <span className="rounded-full border border-bolt/40 bg-bolt/10 px-3 py-1.5 font-semibold text-bolt">PAPER MODE</span>
+          <span className="rounded-full border border-bolt/40 bg-bolt/10 px-3 py-1.5 font-semibold text-bolt">
+            {LIVE_ENABLED ? `LIVE ${STRIKE_ENV.toUpperCase()} + PAPER` : "PAPER MODE"}
+          </span>
         </div>
       </header>
 
@@ -190,6 +200,12 @@ export default function Home() {
         <div className="rounded-xl border border-down/40 bg-down/10 p-4 text-sm text-down">Could not reach Strike: {error}</div>
       )}
       {!snap && !error && <div className="p-10 text-center text-muted">Loading live Strike markets…</div>}
+
+      {snap && !idea && (
+        <div className="rounded-xl border border-line bg-panel p-6 text-center text-sm text-muted">
+          No liquid markets pass the volume and open-interest filters right now. Data refreshes every 20 seconds.
+        </div>
+      )}
 
       {snap && idea && sizing && (
         <div className="grid gap-4 lg:grid-cols-12">
@@ -304,9 +320,9 @@ export default function Home() {
             <PriceChart
               symbol={idea.market.symbol}
               side={idea.side}
-              entry={mark(idea.market.symbol, idea.entry)}
-              stop={idea.stop}
-              target={idea.target}
+              entry={lv?.m}
+              stop={lv?.stop}
+              target={lv?.target}
               livePrice={marks[idea.market.symbol]}
             />
 
@@ -331,8 +347,8 @@ export default function Home() {
                   <dl className="num mt-3 space-y-1 text-sm">
                     {[
                       ["Entry", price(mark(idea.market.symbol, idea.entry))],
-                      ["Stop", `${price(idea.stop)} (−${(idea.stopPct * 100).toFixed(1)}%)`],
-                      ["Target (2R)", price(idea.target)],
+                      ["Stop", `${price(lv?.stop ?? idea.stop)} (−${(idea.stopPct * 100).toFixed(1)}%)`],
+                      ["Target (2R)", price(lv?.target ?? idea.target)],
                     ].map(([k, v]) => (
                       <div key={k} className="flex justify-between">
                         <dt className="text-muted">{k}</dt>
@@ -376,7 +392,7 @@ export default function Home() {
               </div>
             </Card>
 
-            <LiveTradePanel idea={idea} sizing={sizing} />
+            <LiveTradePanel key={`${idea.market.symbol}:${idea.side}`} idea={idea} sizing={sizing} />
           </div>
 
           {/* Right column */}
@@ -465,7 +481,7 @@ export default function Home() {
       )}
 
       <footer className="mt-6 text-center text-[11px] leading-relaxed text-muted">
-        Built for the Strike Hackathon on Strike&apos;s public API. Paper trading only. Signals are heuristics, not financial advice.
+        Built for the Strike Hackathon on Strike&apos;s API. The portfolio panel is paper trading; live orders exist only when a builder code is configured. Signals are heuristics, not financial advice.
       </footer>
 
       {toast && (

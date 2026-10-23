@@ -1,6 +1,6 @@
 # Fulmen demo video script (target 2:20, hard max 2:30)
 
-Everything below matches what is in the app today: live Strike WebSocket, signal board, explained idea, risk-guarded ticket, paper trading with hourly funding, smart-money attention. Live order execution is NOT shown because it is not verified. Do not imply it.
+Everything below matches what is in the app today: live Strike WebSocket, signal board, explained idea, risk-guarded ticket, paper trading with hourly funding, smart-money attention. Live order execution is implemented but NOT proven end-to-end, so do not demo it or imply it works unless you have run a funded testnet order first.
 
 ## Before you hit record
 
@@ -14,7 +14,7 @@ Everything below matches what is in the app today: live Strike WebSocket, signal
 ### Getting a trade that looks good live
 - Funding accrues hourly, so a few seconds of recording shows a tiny number. Two options:
   1. Open the trade BEFORE the video (15 to 60 minutes earlier) on the idea you will feature, so the open position already shows a non-zero "funding +0.0xx" line. In the video say "I opened this earlier".
-  2. Open it live and show the live PnL ticking from the WebSocket marks, and point at the funding line with an honest "this accrues hourly, so it starts at zero".
+  2. Open it live and show the live PnL ticking from the WebSocket marks, and point at the funding line with an honest "funding accrues at Strike's hourly rate, so it builds up slowly".
 - Prefer a high-conviction idea with real liquidity and a funding APR you can read aloud. Whatever is on top of the board at record time is fine; read the actual numbers on screen, do not use the numbers in this script.
 - If a stop or target fires on camera, that is a feature: say so.
 
@@ -29,7 +29,7 @@ Everything below matches what is in the app today: live Strike WebSocket, signal
 | 1:15-1:35 | Order ticket (risk guard on) | Drag the risk slider up past 2%; show the "Guard caps risk" message. Point at notional and leverage | "The ticket sizes the position from how much you are willing to lose. Push the slider past two percent and the guard stops you. Leverage is capped at five times." |
 | 1:35-2:00 | Click "Open paper long/short ..."; then the Paper portfolio card | Click the button. Show the new position, live PnL moving, the funding line. If you pre-opened one, point at its non-zero funding | "One click opens a paper trade at the live mark price. PnL moves with the WebSocket, stops and targets are checked automatically, and funding accrues hourly the way Strike settles it: positive rate means longs pay shorts." |
 | 2:00-2:12 | Smart-money attention card | Click one of the assets in the card; the idea view switches to it | "Here is where Strike's highest copy-score traders concentrate. Public data shows what they focus on, not whether they are long or short, so we call it attention, not positioning." |
-| 2:12-2:30 | Back to full page, or a simple end card with the repo and live URL | Static | "Today this is paper trading. Next is live execution through Strike's trading API with a builder code: every fill sends volume to Strike, and the builder fee funds the app. Code is on GitHub, link below. Thanks." |
+| 2:12-2:30 | Back to full page, or a simple end card with the repo and live URL | Static | "Today you can paper-trade these ideas. The code for live execution through Strike's trading API with a builder code is written and next up is proving it on testnet: every fill sends volume to Strike, and the builder fee funds the app. Code is on GitHub, link below. Thanks." |
 
 Word count of the voiceover is about 330 words, about 2:15 at a calm pace. If you run long, cut the sentence about thin markets and the PnL leaders mention.
 

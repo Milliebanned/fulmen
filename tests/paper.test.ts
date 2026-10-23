@@ -31,3 +31,18 @@ test("risk guard caps leverage and risk", () => {
   assert.ok(z.leverage <= 5 + 1e-9);
   assert.ok(z.riskUsd <= 10_000 * 0.02 + 1e-6 || z.capped);
 });
+
+test("a later non-zero funding rate never pays for time already elapsed", () => {
+  let s = P.open(P.emptyState(), { symbol: "Z-USD", side: "long", entry: 10, notional: 1000, stop: 5, target: 20 });
+  const t0 = s.positions[0].lastFundingAt;
+  s = P.tick(s, { "Z-USD": 10 }, {}, t0 + 5 * 3_600_000); // 5h with no known rate
+  s = P.tick(s, { "Z-USD": 10 }, { "Z-USD": 0.001 }, t0 + 5 * 3_600_000 + 1_000); // rate appears
+  assert.ok(Math.abs(s.positions[0].fundingPaid) < 0.01, "retro-paid " + s.positions[0].fundingPaid);
+});
+
+test("tick does not mutate the input state", () => {
+  const s0 = P.open(P.emptyState(), { symbol: "Q-USD", side: "short", entry: 10, notional: 100, stop: 11, target: 9 });
+  const before = JSON.stringify(s0);
+  P.tick(s0, { "Q-USD": 10 }, { "Q-USD": 0.001 }, s0.positions[0].lastFundingAt + 3_600_000);
+  assert.equal(JSON.stringify(s0), before);
+});

@@ -37,8 +37,10 @@ const settle = async <T,>(p: Promise<T>, fallback: T): Promise<T> => {
 export function useSnapshot(refreshMs = 20_000) {
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const seq = useRef(0);
 
   const load = useCallback(async () => {
+    const mine = ++seq.current;
     try {
       const [raw, prem, sparks] = await Promise.all([fetchMarkets(), fetchPremium(), fetchSparklines()]);
       const [fg, copy, summary, board, liq] = await Promise.all([
@@ -54,6 +56,7 @@ export function useSnapshot(refreshMs = 20_000) {
       const liq7: Record<string, number> = {};
       for (const [ts, sym, v] of liq) if (ts >= cutoff) liq7[sym] = (liq7[sym] ?? 0) + Number(v);
       const ideas = buildIdeas(markets, smart, liq7, fg?.value ?? 50);
+      if (mine !== seq.current) return; // a newer load already started; drop this stale result
       setSnap({ markets, ideas, smart, fearGreed: fg, summary, leaders: board.entries, updatedAt: Date.now() });
       setError(null);
     } catch (e) {
@@ -93,7 +96,10 @@ export function useLiveMarks() {
           const arr = Array.isArray(msg) ? msg : msg.data && Array.isArray(msg.data) ? msg.data : msg.s ? [msg] : null;
           if (!arr) return;
           const upd: Record<string, number> = {};
-          for (const m of arr) if (m?.s && m?.p) upd[m.s] = parseFloat(m.p);
+          for (const m of arr) {
+            const v = m?.s && m?.p ? parseFloat(m.p) : 0;
+            if (v > 0) upd[m.s] = v;
+          }
           if (Object.keys(upd).length) setMarks((prev) => ({ ...prev, ...upd }));
         } catch {}
       };

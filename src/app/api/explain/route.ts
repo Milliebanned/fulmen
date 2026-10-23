@@ -58,6 +58,14 @@ function limited(ip: string, max = 20, windowMs = 60_000): boolean {
   return recent.length > max;
 }
 
+let globalHits: number[] = [];
+function globalLimited(max = 120, windowMs = 60_000): boolean {
+  const now = Date.now();
+  globalHits = globalHits.filter((t) => now - t < windowMs);
+  globalHits.push(now);
+  return globalHits.length > max;
+}
+
 export async function POST(req: Request) {
   let b: Body | null = null;
   try {
@@ -66,9 +74,10 @@ export async function POST(req: Request) {
   if (!b) return Response.json({ error: "invalid body" }, { status: 400 });
 
   const key = process.env.ANTHROPIC_API_KEY;
-  const ip = (req.headers.get("x-forwarded-for") ?? "local").split(",")[0].trim();
+  // Prefer platform-set headers (not client-controlled); add a global cap so rotating IPs cannot drain the key.
+  const ip = (req.headers.get("x-vercel-forwarded-for") ?? req.headers.get("x-real-ip") ?? "local").split(",")[0].trim();
   // Over the limit (or no key): still answer, but with the free deterministic summary.
-  if (!key || limited(ip)) return Response.json({ text: fallback(b), source: "template" });
+  if (!key || limited(ip) || globalLimited()) return Response.json({ text: fallback(b), source: "template" });
 
   const facts = b.reasons.map((r) => `- [${r.tag}] ${r.text}`).join("\n");
   const prompt = `You are the analyst inside Fulmen, a trading terminal for Strike Finance perpetuals.

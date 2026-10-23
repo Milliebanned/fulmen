@@ -246,6 +246,8 @@ export async function placeFromIdea(idea: Idea, sizing: Sizing, type: OrderType,
   const session = loadSession();
   if (!session) throw new Error("Not connected");
   const { plan } = await preparePlan(idea, sizing, type);
+  if (expected && (plan.symbol !== expected.symbol || plan.side !== expected.side || plan.type !== expected.type))
+    throw new GuardError("The idea changed since you confirmed. Review the new order and confirm again.");
   if (expected && Math.abs(plan.notional - expected.notional) / expected.notional > 0.1)
     throw new GuardError("Market or balance changed since confirmation. Review the updated order and confirm again.");
 

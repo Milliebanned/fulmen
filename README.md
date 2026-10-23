@@ -42,13 +42,14 @@ Markets below $50K 24h volume or $25K open interest are excluded.
 > **Honest scope notes**
 > - Strike's public data shows *what* top traders focus on, not whether they are long or short (positions need auth), so
 >   we label it **attention**, not positioning.
-> - Execution is **paper trading** at live prices. Real execution through Strike's trading API with a **builder code**
->   is the planned next step (see Roadmap) — we did not fake it.
+> - The portfolio panel is **paper trading** at live prices (no slippage, spread or fees). Live order routing via a **builder code**
+>   is implemented (`src/lib/execution/`, `LiveTradePanel`) and disabled unless `NEXT_PUBLIC_STRIKE_BUILDER_CODE` is set. Its
+>   signing is unit-checked, but it has **not been run end-to-end with a real wallet and funds** — we don't claim it is proven.
 > - Signals are heuristics, **not financial advice**.
 
 ## How Fulmen uses Strike
 
-All public, unauthenticated endpoints from `https://api.strikefinance.org`:
+Data comes from Strike's public, unauthenticated endpoints at `https://api.strikefinance.org`; live execution (opt-in) uses the signed builder-code endpoints:
 
 | Purpose | Endpoint |
 |---|---|
@@ -62,7 +63,7 @@ All public, unauthenticated endpoints from `https://api.strikefinance.org`:
 | Live mark prices | `wss://api.strikefinance.org/ws/price` → `!markprice@arr` |
 
 Funding detail: Strike settles funding **hourly** (`F_hourly = F_8h / 8`); positive rate means longs pay shorts. Fulmen's paper
-broker accrues exactly that.
+broker accrues that rate continuously (pro-rata per tick), not as discrete hourly payments.
 
 ## Run it
 
@@ -70,6 +71,8 @@ broker accrues exactly that.
 npm install
 npm run dev        # http://localhost:3000
 ```
+
+Optional live execution: set `NEXT_PUBLIC_STRIKE_BUILDER_CODE` (and `NEXT_PUBLIC_STRIKE_ENV=testnet`). See `.env.example`.
 
 Optional: set `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`) in `.env.local` to get Claude-written rationales.
 Without a key Fulmen falls back to a deterministic summary of the same facts — nothing breaks.
@@ -83,6 +86,7 @@ Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; p
 - `src/lib/paper.ts` — paper broker (fills, stops/targets, hourly funding accrual)
 - `src/lib/backtest.ts`, `src/components/BacktestPanel.tsx` — 90-day backtest
 - `src/components/PriceChart.tsx`, `src/lib/chartMath.ts` — SVG candlestick chart
+- `src/lib/execution/*`, `src/components/LiveTradePanel.tsx` — builder-code connect, signing, bracket orders (opt-in, testnet-first)
 - `tests/` — unit tests (`npm test`)
 - `src/lib/useStrike.ts` — data polling + live WebSocket hook
 - `src/app/api/explain/route.ts` — Claude rationale (server-side, key never reaches the browser)
@@ -90,8 +94,9 @@ Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; p
 
 ## Roadmap (future potential)
 
-1. **Live execution via builder codes** — route orders through Strike's trade API with `X-Builder-Fee-Bps`, so every
-   fill sends volume to Strike and earns the app a fee share (max 100 bps), a self-funding growth loop.
+1. **Prove live execution end-to-end** — the builder-code order flow (`X-Builder-Fee-Bps`, bracket orders with stop and
+   target) is written and testnet-first; next is a funded testnet run, then fills and fee accrual. Every fill sends volume
+   to Strike and earns the app a fee share (max 100 bps).
 2. Auto-trade rules ("open the top idea above conviction 70") with the same risk guard.
 3. Position-aware smart money using Strike's authenticated endpoints.
 4. Alerts (Telegram/Discord) when a new high-conviction idea appears.

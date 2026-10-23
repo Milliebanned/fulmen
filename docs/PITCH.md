@@ -10,7 +10,7 @@ Fulmen is a signal-to-trade terminal built only on Strike's public API and mark-
 - **Sizes** the trade from a fixed loss at the stop, with a hard guard of 5x leverage and 2% risk per trade.
 - **Tracks** outcomes in a paper portfolio using live marks and Strike's hourly funding convention.
 
-Status: working prototype, paper trading. Live execution via builder code is in progress, not shipped.
+Status: working prototype with paper trading. Live execution via builder code is implemented (testnet-first, signing unit-checked) but not yet proven end-to-end with a funded wallet.
 
 ## Why it helps Strike
 - **Volume and OI:** ideas point traders at liquid markets with a reason to hold a position (funding carry encourages longer holds, which supports open interest).
@@ -33,7 +33,7 @@ Example with assumed inputs:
 All inputs are placeholders to show sensitivity. The point for Strike: the same volume also pays Strike its own trading fees, so each routed dollar is additive to Strike. Check the current builder fee rules in Strike's docs before relying on the numbers.
 
 ## Roadmap
-1. Live execution through Strike's trade API with a builder code (next; needs verified order flow).
+1. Prove live execution through Strike's trade API with a builder code: code is written; needs a funded testnet run and fill/fee verification.
 2. Auto-trade rules, such as "open the top idea above conviction 70" under the same risk guard.
 3. Position-aware smart money using Strike's authenticated endpoints, turning attention into direction.
 4. Alerts via Telegram or Discord when a new high-conviction idea appears.

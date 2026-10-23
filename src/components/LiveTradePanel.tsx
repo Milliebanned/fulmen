@@ -226,7 +226,7 @@ function LivePanel({ idea, sizing }: { idea: Idea; sizing: Sizing }) {
           </div>
           <button
             onClick={review}
-            disabled={phase.k === "reviewing"}
+            disabled={phase.k === "reviewing" || positions.length > 0}
             className="w-full rounded bg-bolt px-3 py-2 text-sm font-semibold text-black disabled:opacity-50"
           >
             {phase.k === "reviewing" ? "Checking live market..." : `Review ${idea.side.toUpperCase()} ${idea.market.symbol} order`}

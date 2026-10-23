@@ -106,24 +106,25 @@ export function close(s: PaperState, id: string, mark: number, reason: Closed["r
   };
 }
 
-/** Apply stops/targets and accrue funding for the elapsed time. Returns same ref if nothing changed. */
+/** Apply stops/targets and accrue funding for the elapsed time. Returns the same ref if nothing changed. */
 export function tick(
   s: PaperState,
   marks: Record<string, number>,
   hourlyRates: Record<string, number>,
   now = Date.now(),
 ): PaperState {
-  let next = s;
+  // Work on copies so React-owned state is never mutated in place.
+  let next: PaperState = { ...s, positions: s.positions.map((p) => ({ ...p })) };
   let changed = false;
-  for (const p of s.positions) {
+  for (const p of [...next.positions]) {
     const mark = marks[p.symbol];
-    if (!mark) continue;
+    if (!(mark > 0)) continue;
     const rate = hourlyRates[p.symbol] ?? 0;
     const hours = (now - p.lastFundingAt) / 3_600_000;
-    if (hours > 0.001 && rate) {
-      // long pays when rate > 0
-      const pay = -dirOf(p.side) * p.qty * mark * rate * hours;
-      p.fundingPaid += pay;
+    if (hours > 0.001) {
+      // Accrued pro-rata each tick. Long pays when rate > 0. Time always advances, so a later
+      // non-zero rate never pays for the past; catch-up after a long absence is capped at 24h.
+      p.fundingPaid += -dirOf(p.side) * p.qty * mark * rate * Math.min(hours, 24);
       p.lastFundingAt = now;
       changed = true;
     }
@@ -134,5 +135,5 @@ export function tick(
       changed = true;
     }
   }
-  return changed ? { ...next, positions: [...next.positions] } : s;
+  return changed ? next : s;
 }
