@@ -9,7 +9,7 @@ export function AnalystCard() {
   return (
     <section className="glass-blue relative overflow-hidden p-4">
       <div className="mb-3 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2a4fb0]">
-        <span>Fulmen analyst</span>
+        <span>Flumen analyst</span>
         <span>{aiLoading ? "thinking…" : ai?.source === "gemini" ? "Gemini" : ai?.source === "claude" ? "Claude" : "auto summary"}</span>
       </div>
       <div className="mb-3 flex justify-center py-2">

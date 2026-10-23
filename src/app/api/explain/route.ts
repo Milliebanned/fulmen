@@ -1,4 +1,4 @@
-// Turns a Fulmen signal into a plain-English trade rationale.
+// Turns a Flumen signal into a plain-English trade rationale.
 // Provider order: Gemini (free tier, GEMINI_API_KEY) -> Claude (ANTHROPIC_API_KEY) -> deterministic template,
 // so the app never breaks without a key.
 
@@ -160,7 +160,7 @@ export async function POST(req: Request) {
   if (limited(ip) || globalLimited()) return Response.json({ text: fallback(b), source: "template", notes: ["rate limited"] });
 
   const facts = b.reasons.map((r) => `- [${r.tag}] ${r.text}`).join("\n");
-  const prompt = `You are the analyst inside Fulmen, a trading terminal for Strike Finance perpetuals.
+  const prompt = `You are the analyst inside Flumen, a trading terminal for Strike Finance perpetuals.
 Write a concise trade rationale (max 90 words, 3 short sentences plus one risk sentence) for this idea.
 Use ONLY the numbers given. Do not invent data, do not promise profit, no emojis.
 

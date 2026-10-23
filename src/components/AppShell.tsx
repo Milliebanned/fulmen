@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link href="/" className="flex items-center gap-2.5">
             <LogoMark className="h-10 w-10" />
             <div className="leading-tight">
-              <div className="text-lg font-bold tracking-tight">Fulmen</div>
+              <div className="text-lg font-bold tracking-tight">Flumen</div>
               <p className="text-[11px] text-muted">Signal to trade for Strike</p>
             </div>
           </Link>

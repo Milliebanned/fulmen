@@ -6,9 +6,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fulmen — signal-to-trade terminal for Strike",
+  title: "Flumen — signal-to-trade terminal for Strike",
   description:
-    "Fulmen turns live Strike Finance data (funding, momentum, smart-money attention) into explained, risk-guarded trade ideas.",
+    "Flumen turns live Strike Finance data (funding, momentum, smart-money attention) into explained, risk-guarded trade ideas.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

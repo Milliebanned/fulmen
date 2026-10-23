@@ -1,9 +1,9 @@
-# Fulmen — signal → trade terminal for Strike
+# Flumen — signal → trade terminal for Strike
 
-> *Fulmen* (Latin): a lightning strike.
+> *Flumen* (Latin): a flow, a stream. Funding on Strike flows between longs and shorts every hour; Flumen helps you stand on the side that gets paid.
 
-Fulmen turns live **Strike Finance** market data into **explained, risk-guarded trade ideas** you can act on in one click.
-Most traders face the same question: *what should I trade, and why?* Fulmen answers it from Strike's own data, shows its
+Flumen turns live **Strike Finance** market data into **explained, risk-guarded trade ideas** you can act on in one click.
+Most traders face the same question: *what should I trade, and why?* Flumen answers it from Strike's own data, shows its
 reasoning, sizes the trade so a stop-out costs a fixed % of equity, and tracks the result live.
 
 Built for the **Strike Hackathon** (Oct 21–23, 2026).
@@ -48,7 +48,7 @@ Markets below $50K 24h volume or $25K open interest are excluded.
 >   signing is unit-checked, but it has **not been run end-to-end with a real wallet and funds** — we don't claim it is proven.
 > - Signals are heuristics, **not financial advice**.
 
-## How Fulmen uses Strike
+## How Flumen uses Strike
 
 Data comes from Strike's public, unauthenticated endpoints at `https://api.strikefinance.org`; live execution (opt-in) uses the signed builder-code endpoints:
 
@@ -63,7 +63,7 @@ Data comes from Strike's public, unauthenticated endpoints at `https://api.strik
 | Platform stats / liquidations | `GET /stat/v1/dashboard/summary`, `/liquidations` |
 | Live mark prices | `wss://api.strikefinance.org/ws/price` → `!markprice@arr` |
 
-Funding detail: Strike settles funding **hourly** (`F_hourly = F_8h / 8`); positive rate means longs pay shorts. Fulmen's paper
+Funding detail: Strike settles funding **hourly** (`F_hourly = F_8h / 8`); positive rate means longs pay shorts. Flumen's paper
 broker accrues that rate continuously (pro-rata per tick), not as discrete hourly payments.
 
 ## Routes

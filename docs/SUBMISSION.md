@@ -1,4 +1,4 @@
-# Fulmen submission pack
+# Flumen submission pack
 
 Deadline: Fri Oct 23 2026, 10:00 AM Eastern = 07:00 AM Pacific. Aim to submit by 06:00 AM Pacific.
 
@@ -6,15 +6,15 @@ Items marked [FILL] need your input.
 
 ## A. Copy-paste form answers
 
-**Project name:** Fulmen
+**Project name:** Flumen
 
-**One-line pitch:** Fulmen turns live Strike market data into explained, risk-guarded trade ideas you can paper-trade in one click, with builder-code live execution written and next to be proven on testnet.
+**One-line pitch:** Flumen turns live Strike market data into explained, risk-guarded trade ideas you can paper-trade in one click, with builder-code live execution written and next to be proven on testnet.
 
 **Description (about 100 words):**
-Fulmen is a signal-to-trade terminal for Strike Finance. It ranks every liquid Strike perp by a transparent 0 to 100 conviction score built from funding carry, momentum, smart-money attention, liquidity and a volatility penalty. For any market it shows direction, entry, stop, a 2R target and plain-language reasons, plus a AI-written rationale that cites only the live numbers. A risk-guarded order ticket sizes the position from risk per trade and caps leverage at 5x and risk at 2%. Trades are paper-traded at Strike's live WebSocket mark price with automatic stops and targets and hourly funding accrual the way Strike settles it.
+Flumen is a signal-to-trade terminal for Strike Finance. It ranks every liquid Strike perp by a transparent 0 to 100 conviction score built from funding carry, momentum, smart-money attention, liquidity and a volatility penalty. For any market it shows direction, entry, stop, a 2R target and plain-language reasons, plus a AI-written rationale that cites only the live numbers. A risk-guarded order ticket sizes the position from risk per trade and caps leverage at 5x and risk at 2%. Trades are paper-traded at Strike's live WebSocket mark price with automatic stops and targets and hourly funding accrual the way Strike settles it.
 
 **How it interacts with Strike:**
-Fulmen reads Strike's public, unauthenticated API at https://api.strikefinance.org:
+Flumen reads Strike's public, unauthenticated API at https://api.strikefinance.org:
 - `GET /price/v2/marketStats` (prices, volume, open interest, 24h stats)
 - `GET /price/v2/premiumIndex` (hourly funding rates)
 - `GET /price/v2/sparklines` (24h price series)
@@ -60,7 +60,7 @@ The paper broker applies Strike's funding convention (hourly, positive rate mean
 
 ## C. Limitations (use this text, judges reward candour)
 
-Fulmen is a prototype. Trading is simulated: paper positions fill at Strike's live mark price with no slippage, spread, order book depth or fees, so paper results will flatter real execution. Live order routing through Strike's trade API with a builder code is implemented (testnet-first, disabled unless a builder code is configured) and its request signing is unit-checked, but it has not been run end-to-end with a real wallet and funds, so we do not claim it works in production. The "smart money" signal is attention, not direction: Strike's public data shows which assets top copy-score traders focus on, but not whether they are long or short, since positions need authentication. The conviction score is a transparent heuristic with hand-chosen weights; the backtest covers the funding-side rule (side from trailing funding, volatility stop, 2R target), not the full conviction score. Across 8 liquid markets over 90 days that rule was roughly break-even after fees, with funding a steady positive and price noise and costs deciding the net; we did not tune it. A high score is not a prediction. Funding carry can be erased by a single adverse price move, which is why every idea carries a stop. The AI rationale restates the live numbers and can be wrong in framing; it is not advice. Paper state lives in one browser's localStorage. Nothing here is financial advice.
+Flumen is a prototype. Trading is simulated: paper positions fill at Strike's live mark price with no slippage, spread, order book depth or fees, so paper results will flatter real execution. Live order routing through Strike's trade API with a builder code is implemented (testnet-first, disabled unless a builder code is configured) and its request signing is unit-checked, but it has not been run end-to-end with a real wallet and funds, so we do not claim it works in production. The "smart money" signal is attention, not direction: Strike's public data shows which assets top copy-score traders focus on, but not whether they are long or short, since positions need authentication. The conviction score is a transparent heuristic with hand-chosen weights; the backtest covers the funding-side rule (side from trailing funding, volatility stop, 2R target), not the full conviction score. Across 8 liquid markets over 90 days that rule was roughly break-even after fees, with funding a steady positive and price noise and costs deciding the net; we did not tune it. A high score is not a prediction. Funding carry can be erased by a single adverse price move, which is why every idea carries a stop. The AI rationale restates the live numbers and can be wrong in framing; it is not advice. Paper state lives in one browser's localStorage. Nothing here is financial advice.
 
 ## D. Pre-submit checklist (work backwards from 07:00 AM PDT)
 

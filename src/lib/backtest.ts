@@ -1,4 +1,4 @@
-// Historical backtest of Fulmen's funding-carry rule on Strike markets.
+// Historical backtest of Flumen's funding-carry rule on Strike markets.
 // Data: hourly klines (/price/v2/klines) + hourly funding history (/stat/v1/stats/coin/history/funding, max 90d).
 // `runBacktest` is pure and unit-testable; `fetchAndBacktest` does the network calls.
 

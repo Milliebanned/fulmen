@@ -1,5 +1,5 @@
 /**
- * Fulmen Idea+Sizing -> real Strike orders.
+ * Flumen Idea+Sizing -> real Strike orders.
  *
  * Endpoints (docs/openapi trade-api.yaml):
  *   POST   /v2/leverage        {symbol, leverage}                     (async-sequenced)
@@ -12,7 +12,7 @@
  * that only activate once the entry fills, and are OCO. The idea's stop is therefore live on
  * the exchange, not just a UI promise.
  *
- * Price rebasing: Fulmen ideas are built from MAINNET market data, but testnet marks differ.
+ * Price rebasing: Flumen ideas are built from MAINNET market data, but testnet marks differ.
  * The plan keeps the idea's *percentage* stop/target distances and re-anchors them on the
  * target environment's current mark, and sizes the quantity from notional / that mark.
  */

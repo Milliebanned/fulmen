@@ -86,7 +86,7 @@ function mulberry32(seed: number): () => number {
 /* Scene pieces                                                        */
 /* ------------------------------------------------------------------ */
 
-/** The Fulmen mark in 3D: a glossy orb (the position) with a ring (hourly funding) and a satellite riding it. */
+/** The Flumen mark in 3D: a glossy orb (the position) with a ring (hourly funding) and a satellite riding it. */
 function Orb({ animate }: { animate: boolean }) {
   const group = useRef<THREE.Group>(null);
   const satellite = useRef<THREE.Mesh>(null);
