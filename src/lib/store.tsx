@@ -98,6 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setAiLoading(true);
     fetch("/api/explain", {
+      signal: AbortSignal.timeout(20000),
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

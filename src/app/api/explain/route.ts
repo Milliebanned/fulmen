@@ -69,13 +69,18 @@ function globalLimited(max = 120, windowMs = 60_000): boolean {
 
 let geminiModel: string | null = null; // cached once a model answers
 
-async function geminiCall(key: string, model: string, prompt: string): Promise<Response> {
+const GEMINI_TIMEOUT_MS = 7000; // a slow model must never stall the UI
+const GEMINI_BUDGET_MS = 14000;
+
+async function geminiCall(key: string, model: string, prompt: string, noThinking: boolean): Promise<Response> {
   return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-goog-api-key": key },
+    signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 300, temperature: 0.3 },
+      // "Thinking" tokens count against maxOutputTokens and add many seconds: this task needs neither.
+      generationConfig: { maxOutputTokens: 500, temperature: 0.3, ...(noThinking ? { thinkingConfig: { thinkingBudget: 0 } } : {}) },
     }),
   });
 }
@@ -84,42 +89,57 @@ async function geminiCall(key: string, model: string, prompt: string): Promise<R
 async function discoverGeminiModels(key: string): Promise<string[]> {
   const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=100", {
     headers: { "x-goog-api-key": key },
+    signal: AbortSignal.timeout(4000),
   });
   if (!res.ok) return [];
   const j = await res.json();
   return (j?.models ?? [])
     .filter((m: { name?: string; supportedGenerationMethods?: string[] }) => m.name?.includes("flash") && m.supportedGenerationMethods?.includes("generateContent"))
     .map((m: { name: string }) => m.name.replace(/^models\//, ""))
-    .filter((n: string) => !/(image|tts|live|audio|embedding|thinking|exp)/.test(n));
+    .filter((n: string) => !/(image|tts|live|audio|embedding|thinking|exp)/.test(n))
+    .sort((a: string, b: string) => Number(/lite/.test(b)) - Number(/lite/.test(a))); // fastest first
 }
 
 async function viaGemini(key: string, prompt: string, notes: string[]): Promise<string | null> {
-  const preferred = [geminiModel, process.env.GEMINI_MODEL, "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"].filter(Boolean) as string[];
+  const started = Date.now();
+  const preferred = [geminiModel, process.env.GEMINI_MODEL, "gemini-flash-lite-latest", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash"].filter(Boolean) as string[];
   const tried = new Set<string>();
   let queue = [...new Set(preferred)];
   let discovered = false;
 
-  while (queue.length) {
+  while (queue.length && Date.now() - started < GEMINI_BUDGET_MS) {
     const model = queue.shift()!;
     if (tried.has(model)) continue;
     tried.add(model);
-    const res = await geminiCall(key, model, prompt);
-    if (res.ok) {
-      const j = await res.json();
-      const text = j?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
-      if (text) {
-        geminiModel = model;
-        return text;
+    let status = 0;
+    try {
+      let res = await geminiCall(key, model, prompt, true);
+      if (res.status === 400) res = await geminiCall(key, model, prompt, false); // model rejects thinkingConfig
+      status = res.status;
+      if (res.ok) {
+        const j = await res.json();
+        const cand = j?.candidates?.[0];
+        const text: string = (cand?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("").trim();
+        // A cut-off answer is worse than the template: reject it and try the next model.
+        if (text.length >= 60 && cand?.finishReason !== "MAX_TOKENS") {
+          geminiModel = model;
+          return text;
+        }
+        notes.push(`gemini ${model} unusable (${cand?.finishReason ?? "short"})`);
+        continue;
       }
-      notes.push(`gemini ${model} empty (${j?.candidates?.[0]?.finishReason ?? j?.promptFeedback?.blockReason ?? "no candidates"})`);
-      return null;
+    } catch {
+      notes.push(`gemini ${model} timeout/network`);
+      continue;
     }
-    notes.push(`gemini ${model} HTTP ${res.status}`);
-    // 404 = unknown model name, 429/503 = this model is busy: try the next one. Auth errors will not improve.
-    if (![404, 429, 500, 503].includes(res.status)) return null;
-    if (!queue.length && !discovered && res.status === 404) {
+    notes.push(`gemini ${model} HTTP ${status}`);
+    // 404 = unknown model name, 429/5xx = busy: try the next one. Auth errors will not improve.
+    if (![404, 429, 500, 503].includes(status)) return null;
+    if (!queue.length && !discovered && status === 404) {
       discovered = true;
-      queue = (await discoverGeminiModels(key)).slice(0, 4);
+      try {
+        queue = (await discoverGeminiModels(key)).slice(0, 3);
+      } catch {}
       if (!queue.length) notes.push("gemini model discovery returned nothing");
     }
   }
