@@ -67,7 +67,7 @@ function globalLimited(max = 120, windowMs = 60_000): boolean {
   return globalHits.length > max;
 }
 
-async function viaGemini(key: string, prompt: string): Promise<string | null> {
+async function viaGemini(key: string, prompt: string, notes: string[]): Promise<string | null> {
   const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
@@ -77,13 +77,17 @@ async function viaGemini(key: string, prompt: string): Promise<string | null> {
       generationConfig: { maxOutputTokens: 300, temperature: 0.3 },
     }),
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    notes.push(`gemini HTTP ${res.status}`);
+    return null;
+  }
   const j = await res.json();
   const text = j?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
+  if (!text) notes.push(`gemini empty (${j?.candidates?.[0]?.finishReason ?? j?.promptFeedback?.blockReason ?? "no candidates"})`);
   return text || null;
 }
 
-async function viaClaude(key: string, prompt: string): Promise<string | null> {
+async function viaClaude(key: string, prompt: string, notes: string[]): Promise<string | null> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
@@ -93,7 +97,10 @@ async function viaClaude(key: string, prompt: string): Promise<string | null> {
       messages: [{ role: "user", content: prompt }],
     }),
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    notes.push(`claude HTTP ${res.status}`);
+    return null;
+  }
   const j = await res.json();
   return j?.content?.find((c: { type: string }) => c.type === "text")?.text ?? null;
 }
@@ -110,7 +117,8 @@ export async function POST(req: Request) {
   // Prefer platform-set headers (not client-controlled); add a global cap so rotating IPs cannot drain a key.
   const ip = (req.headers.get("x-vercel-forwarded-for") ?? req.headers.get("x-real-ip") ?? "local").split(",")[0].trim();
   // Over the limit (or no key): still answer, but with the free deterministic summary.
-  if ((!gemini && !claude) || limited(ip) || globalLimited()) return Response.json({ text: fallback(b), source: "template" });
+  if (!gemini && !claude) return Response.json({ text: fallback(b), source: "template", notes: ["no AI key configured on the server"] });
+  if (limited(ip) || globalLimited()) return Response.json({ text: fallback(b), source: "template", notes: ["rate limited"] });
 
   const facts = b.reasons.map((r) => `- [${r.tag}] ${r.text}`).join("\n");
   const prompt = `You are the analyst inside Fulmen, a trading terminal for Strike Finance perpetuals.
@@ -123,14 +131,17 @@ Market sentiment index: ${b.fearGreed ?? "n/a"}
 Signals:
 ${facts}`;
 
+  const notes: string[] = [];
   const attempts: [string, () => Promise<string | null>][] = [];
-  if (gemini) attempts.push(["gemini", () => viaGemini(gemini, prompt)]);
-  if (claude) attempts.push(["claude", () => viaClaude(claude, prompt)]);
+  if (gemini) attempts.push(["gemini", () => viaGemini(gemini, prompt, notes)]);
+  if (claude) attempts.push(["claude", () => viaClaude(claude, prompt, notes)]);
   for (const [source, run] of attempts) {
     try {
       const text = await run();
       if (text) return Response.json({ text, source });
-    } catch {}
+    } catch (e) {
+      notes.push(`${source} error: ${e instanceof Error ? e.message.slice(0, 80) : "unknown"}`);
+    }
   }
-  return Response.json({ text: fallback(b), source: "template" });
+  return Response.json({ text: fallback(b), source: "template", notes });
 }
