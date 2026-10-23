@@ -14,7 +14,7 @@ const NAVLINKS = [
   ["FAQ", "#faq"],
 ] as const;
 
-// The "logo wall" of the reference, used for what Flumen is actually built on.
+// The "logo wall" of the reference, used for what Fulmen is actually built on.
 const SOURCES = [
   ["Hourly funding", "M3 12h4l3-8 4 16 3-8h4"],
   ["Live candles", "M6 4v16M6 8h3v6H6M15 6v14M15 10h3v6h-3"],
@@ -41,7 +41,7 @@ const FAQ = [
   ],
   [
     "What does smart money mean here?",
-    "Strike's public data shows which assets its highest copy-score traders concentrate on, not whether they are long or short. So Flumen calls it attention, not positioning.",
+    "Strike's public data shows which assets its highest copy-score traders concentrate on, not whether they are long or short. So Fulmen calls it attention, not positioning.",
   ],
   [
     "How good is the strategy?",
@@ -68,7 +68,7 @@ export default function Landing() {
           <nav className="relative z-20 flex items-center justify-between gap-3 rounded-full bg-white/90 py-2 pl-4 pr-2 shadow-sm backdrop-blur" aria-label="Primary">
             <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
               <LogoMark className="h-7 w-7" />
-              Flumen
+              Fulmen
             </Link>
             <div className="hidden items-center gap-1 text-[12px] font-medium text-ink/70 md:flex">
               {NAVLINKS.map(([label, href]) => (
@@ -86,7 +86,7 @@ export default function Landing() {
           <div className="relative z-10 flex flex-1 flex-col">
             <div className="relative pt-10 sm:pt-14 lg:max-w-[50%]">
               <h1 className="text-balance text-[38px] font-medium leading-[1.04] tracking-[-0.03em] text-[#0b1d5e] sm:text-5xl lg:text-[58px]">
-                Meet Flumen, the <span className="text-[#3f74ff]">signal-to-trade</span> terminal for Strike
+                Meet Fulmen, the <span className="text-[#3f74ff]">signal-to-trade</span> terminal for Strike
               </h1>
               <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#0b1d5e]/70">
                 It finds the trade, explains why, sizes the risk, and tests the rule on history before you place it.
@@ -178,7 +178,7 @@ export default function Landing() {
               </h2>
               <p className="mt-5 max-w-md leading-relaxed text-white/75">
                 On Strike, funding settles hourly. When the rate is positive, longs pay shorts, and when it turns negative the flow reverses.
-                Flumen leans toward the side that gets paid, then sizes it so a wrong call has a known, capped cost.
+                Fulmen leans toward the side that gets paid, then sizes it so a wrong call has a known, capped cost.
               </p>
               <div className="mt-7 flex flex-wrap gap-3 text-xs font-semibold text-white">
                 {["Hourly rate × 8,760 = APR", "Stop on every idea", "2R target"].map((t) => (
@@ -233,7 +233,7 @@ export default function Landing() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Built on Strike</p>
             <h2 className="mt-3 text-balance text-3xl font-medium tracking-[-0.02em] text-[#0b1d5e] sm:text-4xl">Every number on screen comes from Strike.</h2>
             <p className="mt-4 leading-relaxed text-[#0b1d5e]/70">
-              Flumen reads Strike&apos;s public endpoints straight from the browser. There is nothing to sign up for and no server in between. Funding is treated the way
+              Fulmen reads Strike&apos;s public endpoints straight from the browser. There is nothing to sign up for and no server in between. Funding is treated the way
               Strike settles it: hourly, positive means longs pay shorts.
             </p>
           </div>
@@ -242,7 +242,7 @@ export default function Landing() {
               <span className="h-2 w-2 rounded-full bg-accent" /> Builder codes
             </div>
             <p className="mt-3 text-sm leading-relaxed text-[#0b1d5e]/75">
-              Strike lets apps route orders for users and keep a share of each fill, up to 1%. Flumen has the path written: wallet connect, request signing and bracket
+              Strike lets apps route orders for users and keep a share of each fill, up to 1%. Fulmen has the path written: wallet connect, request signing and bracket
               orders with a live stop and target, testnet-first.
             </p>
             <p className="mt-3 text-xs leading-relaxed text-[#0b1d5e]/60">
@@ -288,7 +288,7 @@ export default function Landing() {
 
         <footer className="mx-auto mt-8 flex max-w-6xl flex-col items-center justify-between gap-3 px-2 text-xs text-[#0b1d5e]/60 sm:flex-row">
           <div className="flex items-center gap-2 font-semibold text-[#0b1d5e]">
-            <LogoMark className="h-6 w-6" /> Flumen
+            <LogoMark className="h-6 w-6" /> Fulmen
           </div>
           <p className="max-w-xl text-center leading-relaxed sm:text-left">
             Independent project, not affiliated with Strike. Paper trading by default. Signals are heuristics, not financial advice.

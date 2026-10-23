@@ -18,7 +18,7 @@ export default function SignalsPage() {
     <>
       <PageTitle
         title="Signals"
-        subtitle="Pick a market, read why Flumen likes it, size it with the risk guard, and trade it."
+        subtitle="Pick a market, read why Fulmen likes it, size it with the risk guard, and trade it."
       />
       <div className="grid gap-4 lg:grid-cols-12">
         {/* Signal board */}

@@ -1,10 +1,10 @@
-# Flumen: one-page pitch for the Strike team
+# Fulmen: one-page pitch for the Strike team
 
 ## Problem
 Strike lists many perp markets. A trader opening the app sees prices and funding but has to decide alone which market to trade, which side, and how large. Most skip the sizing question, which is where accounts blow up. Funding, momentum, liquidity and top-trader activity all sit in Strike's data, but nobody combines them into a ranked, explained, sized idea.
 
 ## Product
-Flumen is a signal-to-trade terminal built only on Strike's public API and mark-price WebSocket.
+Fulmen is a signal-to-trade terminal built only on Strike's public API and mark-price WebSocket.
 - **Ranks** every liquid market with a transparent 0 to 100 conviction score: funding carry 40%, liquidity 22%, momentum 20%, smart-money attention 18%, minus a volatility penalty.
 - **Explains** each idea: direction (take the side that gets paid funding), entry, stop, 2R target, reasons, and a AI-written rationale that cites only live numbers.
 - **Sizes** the trade from a fixed loss at the stop, with a hard guard of 5x leverage and 2% risk per trade.
@@ -19,7 +19,7 @@ Status: working prototype with paper trading. Live execution via builder code is
 - **Distribution:** every idea ends in a Strike trade, so the app is a top-of-funnel for Strike.
 
 ## Revenue model (illustrative, assumptions only)
-Strike's builder codes let an app attach a fee in basis points to orders it routes, up to 100 bps, so Strike receives the volume and the builder earns a share. Flumen has no live users and no traction numbers. The maths below is a formula, not a forecast.
+Strike's builder codes let an app attach a fee in basis points to orders it routes, up to 100 bps, so Strike receives the volume and the builder earns a share. Fulmen has no live users and no traction numbers. The maths below is a formula, not a forecast.
 
 Monthly builder revenue = traders x average monthly volume per trader x fee (bps / 10,000)
 

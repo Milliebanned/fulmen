@@ -1,4 +1,4 @@
-# Flumen demo video script (target 2:20, hard max 2:30)
+# Fulmen demo video script (target 2:20, hard max 2:30)
 
 NOTE: the app now has a landing page at `/` and four pages (`/dashboard`, `/signals`, `/backtest`, `/portfolio`). Open on the landing page for a few seconds, click Launch app, then follow the shots below; use the Signals page for the idea, chart and ticket, Backtest for the proof, Portfolio for the paper trade.
 
@@ -24,7 +24,7 @@ Everything below matches what is in the app today: live Strike WebSocket, signal
 
 | Time | On screen | Action | Voiceover |
 |---|---|---|---|
-| 0:00-0:12 | Flumen full page, header visible | Static, then slowly move the cursor over the header pills | "Perps traders get a wall of tickers and have to decide what to trade, and why. Flumen turns Strike's own data into explained, risk-sized trade ideas." |
+| 0:00-0:12 | Fulmen full page, header visible | Static, then slowly move the cursor over the header pills | "Perps traders get a wall of tickers and have to decide what to trade, and why. Fulmen turns Strike's own data into explained, risk-sized trade ideas." |
 | 0:12-0:27 | Header: green "Strike WS live" dot, sentiment pill, Strike volume and trader count | Hover the live dot, then watch the prices on the board tick | "This is live. Prices come from Strike's mark-price WebSocket, and the context pills come from Strike's public API: sentiment, platform volume, trader count. Nothing is mocked." |
 | 0:27-0:50 | Signal board (left column) | Scroll the list slowly; point at conviction bars and the sparklines | "The board ranks every liquid Strike market by a conviction score from zero to a hundred. It mixes funding carry, momentum, smart-money attention and liquidity, and penalises very volatile markets. Thin markets are filtered out." |
 | 0:50-1:15 | Trade idea card for the top market | Click the top market. Point at side, entry, stop, target. Then read two of the reasons (Funding, Smart money). Then the "Analyst rationale" box | "Click a market and you get a direction, entry, stop and a two-R target. Here is why: funding is [read the APR], so the side that gets paid is the [short or long]. Below that, a AI-written rationale that only cites these live numbers. If there is no API key it falls back to a plain summary of the same facts." |

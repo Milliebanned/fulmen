@@ -1,4 +1,4 @@
-// The Flumen mark: a position (the orb) with funding orbiting it (the ring and its satellite dot).
+// The Fulmen mark: a position (the orb) with funding orbiting it (the ring and its satellite dot).
 // The ring passes behind the orb and in front of it, which is what gives the flat icon its depth.
 // No letters, no numbers, no lightning.
 
