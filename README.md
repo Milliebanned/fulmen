@@ -18,14 +18,15 @@ Built for the **Strike Hackathon** (Oct 21–23, 2026).
    **hourly funding the way Strike settles it**.
 5. **Smart-money attention** — where Strike's highest copy-score traders concentrate (weighted by score and 7d PnL).
 6. **Candlestick chart** — 15m/1h/4h candles with the idea's entry, stop and target drawn as shaded risk/reward zones, last candle updating live.
-7. **90-day backtest per market** — replays the rule on Strike's own history (hourly funding from
+7. **90-day backtest per market, plus an all-markets table** — replays the rule on Strike's own history (hourly funding from
    `/stat/v1/stats/coin/history/funding` plus klines): side chosen daily from trailing funding, volatility-based stop,
    2R target, 0.05%/side fees, 1% risk sizing capped at 5x. It reports return, win rate, max drawdown, the
    price-vs-funding PnL split and buy-and-hold for comparison, with caveats.
 
-> **Backtest honesty:** in our 90-day runs most return came from the stop/target price moves, and funding was a
-> small part (ADA is the exception). The rule is a *risk-managed directional rule that favours the paid side*, not a
-> pure carry trade, and it trailed buy-and-hold in this up-trending window. We show those numbers rather than hide them.
+> **Backtest honesty:** run across 8 liquid markets over 90 days, the rule was roughly break-even after fees (about half
+> the markets positive, average return near zero in our runs). Funding was a steady positive contributor; price moves and
+> trading costs decided the net result. We did not tune parameters to look better (a quick sweep showed the edge is small and
+> unstable). The app shows the per-market and all-market numbers as computed, with caveats.
 
 ## How the conviction score works
 
@@ -90,7 +91,9 @@ Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript. No database; p
 - `tests/` — unit tests (`npm test`)
 - `src/lib/useStrike.ts` — data polling + live WebSocket hook
 - `src/app/api/explain/route.ts` — AI rationale via Gemini/Claude with template fallback (server-side, keys never reach the browser)
-- `src/app/page.tsx` — the terminal UI
+- `src/app/page.tsx` (Dashboard), `src/app/signals`, `src/app/backtest`, `src/app/portfolio` — one page per section
+- `src/lib/store.tsx` — shared app state (live data, WebSocket prices, paper account) mounted in the layout
+- `src/components/AppShell.tsx`, `ui.tsx`, `AnalystCard.tsx` — navigation shell and shared UI
 
 ## Roadmap (future potential)
 
